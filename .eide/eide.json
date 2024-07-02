@@ -1,0 +1,311 @@
+{
+  "name": "stm32f412",
+  "type": "ARM",
+  "dependenceList": [],
+  "srcDirs": [],
+  "virtualFolder": {
+    "name": "<virtual_root>",
+    "files": [],
+    "folders": [
+      {
+        "name": "core",
+        "files": [
+          {
+            "path": "core/startup_stm32f412rx.s"
+          },
+          {
+            "path": "core/startup_stm32f401xc.s"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "name": "hardware",
+        "files": [
+          {
+            "path": "hardware/i2s.c"
+          },
+          {
+            "path": "hardware/es9018.c"
+          },
+          {
+            "path": "hardware/IIC.c"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "name": "malloc",
+        "files": [
+          {
+            "path": "malloc/malloc.c"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "name": "system",
+        "files": [
+          {
+            "path": "system/delay.c"
+          },
+          {
+            "path": "system/sys.c"
+          },
+          {
+            "path": "system/usart.c"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "name": "usb",
+        "files": [
+          {
+            "path": "USB/stm324xg_usb_audio_codec.c"
+          },
+          {
+            "path": "USB/usb_bsp.c"
+          },
+          {
+            "path": "USB/usb_core.c"
+          },
+          {
+            "path": "USB/usb_dcd_int.c"
+          },
+          {
+            "path": "USB/usb_dcd.c"
+          },
+          {
+            "path": "USB/usbd_audio_core.c"
+          },
+          {
+            "path": "USB/usbd_audio_out_if.c"
+          },
+          {
+            "path": "USB/usbd_core.c"
+          },
+          {
+            "path": "USB/usbd_desc.c"
+          },
+          {
+            "path": "USB/usbd_ioreq.c"
+          },
+          {
+            "path": "USB/usbd_req.c"
+          },
+          {
+            "path": "USB/usbd_usr.c"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "name": "user",
+        "files": [
+          {
+            "path": "user/main.c"
+          }
+        ],
+        "folders": []
+      }
+    ]
+  },
+  "outDir": "build",
+  "deviceName": null,
+  "packDir": null,
+  "miscInfo": {
+    "uid": "bebb625107e3a44b3e955365427e6fe7"
+  },
+  "targets": {
+    "401": {
+      "excludeList": [
+        "<virtual_root>/core/startup_stm32f40_41xxx.s",
+        "<virtual_root>/fwlib/stm32f4xx_gpio.c",
+        "<virtual_root>/fwlib/stm32f4xx_usart.c",
+        "<virtual_root>/fwlib/stm32f4xx_spi.c",
+        "<virtual_root>/fwlib/stm32f4xx_tim.c",
+        "<virtual_root>/fwlib/stm32f4xx_syscfg.c",
+        "<virtual_root>/fwlib/stm32f4xx_rcc.c",
+        "<virtual_root>/fwlib/stm32f4xx_dma.c",
+        "<virtual_root>/fwlib/misc.c",
+        "<virtual_root>/fwlib",
+        "<virtual_root>/core/system_stm32f4xx.c",
+        "<virtual_root>/core/stm32f4xx_it.c",
+        "<virtual_root>/core/startup_stm32f412rx.s"
+      ],
+      "toolchain": "AC5",
+      "compileConfig": {
+        "cpuType": "Cortex-M4",
+        "floatingPointHardware": "single",
+        "useCustomScatterFile": false,
+        "scatterFilePath": "<YOUR_SCATTER_FILE>.sct",
+        "storageLayout": {
+          "RAM": [
+            {
+              "tag": "IRAM",
+              "id": 1,
+              "mem": {
+                "startAddr": "0x20000000",
+                "size": "0x10000"
+              },
+              "isChecked": true,
+              "noInit": false
+            }
+          ],
+          "ROM": [
+            {
+              "tag": "IROM",
+              "id": 1,
+              "mem": {
+                "startAddr": "0x08000000",
+                "size": "0x40000"
+              },
+              "isChecked": true,
+              "isStartup": true
+            }
+          ]
+        },
+        "options": "null"
+      },
+      "uploader": "STLink",
+      "uploadConfig": {
+        "bin": "",
+        "proType": "SWD",
+        "resetMode": "default",
+        "runAfterProgram": true,
+        "speed": 4000,
+        "address": "0x08000000",
+        "elFile": "None",
+        "optionBytes": ".eide/401.st.option.bytes.ini",
+        "otherCmds": ""
+      },
+      "uploadConfigMap": {
+        "JLink": {
+          "bin": "",
+          "baseAddr": "",
+          "cpuInfo": {
+            "vendor": "null",
+            "cpuName": "null"
+          },
+          "proType": 1,
+          "speed": 8000,
+          "otherCmds": ""
+        }
+      },
+      "custom_dep": {
+        "name": "default",
+        "incList": [
+          "core",
+          "fwlib/inc",
+          "hardware",
+          "malloc",
+          "system",
+          "USB",
+          "user"
+        ],
+        "libList": [],
+        "defineList": [
+          "USE_USB_OTG_FS",
+          "STM32F401xC",
+          "DEBUG"
+        ]
+      }
+    },
+    "412": {
+      "excludeList": [
+        "<virtual_root>/core/startup_stm32f40_41xxx.s",
+        "<virtual_root>/fwlib/stm32f4xx_gpio.c",
+        "<virtual_root>/fwlib/stm32f4xx_usart.c",
+        "<virtual_root>/fwlib/stm32f4xx_spi.c",
+        "<virtual_root>/fwlib/stm32f4xx_tim.c",
+        "<virtual_root>/fwlib/stm32f4xx_syscfg.c",
+        "<virtual_root>/fwlib/stm32f4xx_rcc.c",
+        "<virtual_root>/fwlib/stm32f4xx_dma.c",
+        "<virtual_root>/fwlib/misc.c",
+        "<virtual_root>/fwlib",
+        "<virtual_root>/core/system_stm32f4xx.c",
+        "<virtual_root>/core/stm32f4xx_it.c",
+        "<virtual_root>/core/startup_stm32f401xc.s"
+      ],
+      "toolchain": "AC5",
+      "compileConfig": {
+        "cpuType": "Cortex-M4",
+        "floatingPointHardware": "single",
+        "useCustomScatterFile": false,
+        "scatterFilePath": "<YOUR_SCATTER_FILE>.sct",
+        "storageLayout": {
+          "RAM": [
+            {
+              "tag": "IRAM",
+              "id": 1,
+              "mem": {
+                "startAddr": "0x20000000",
+                "size": "0x40000"
+              },
+              "isChecked": true,
+              "noInit": false
+            }
+          ],
+          "ROM": [
+            {
+              "tag": "IROM",
+              "id": 1,
+              "mem": {
+                "startAddr": "0x08000000",
+                "size": "0x80000"
+              },
+              "isChecked": true,
+              "isStartup": true
+            }
+          ]
+        },
+        "options": "null"
+      },
+      "uploader": "STLink",
+      "uploadConfig": {
+        "bin": "",
+        "proType": "SWD",
+        "resetMode": "default",
+        "runAfterProgram": true,
+        "speed": 4000,
+        "address": "0x08000000",
+        "elFile": "None",
+        "optionBytes": ".eide/412.st.option.bytes.ini",
+        "otherCmds": ""
+      },
+      "uploadConfigMap": {
+        "JLink": {
+          "bin": "",
+          "baseAddr": "",
+          "cpuInfo": {
+            "vendor": "null",
+            "cpuName": "null"
+          },
+          "proType": 1,
+          "speed": 8000,
+          "otherCmds": ""
+        }
+      },
+      "custom_dep": {
+        "name": "default",
+        "incList": [
+          "core",
+          "fwlib/inc",
+          "hardware",
+          "malloc",
+          "system",
+          "USB",
+          "user"
+        ],
+        "libList": [],
+        "defineList": [
+          "USE_USB_OTG_FS",
+          "STM32F412Rx",
+          "DEBUG"
+        ]
+      }
+    }
+  },
+  "version": "3.4"
+}
