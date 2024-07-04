@@ -30,6 +30,12 @@
           },
           {
             "path": "hardware/IIC.c"
+          },
+          {
+            "path": "hardware/24cxx.c"
+          },
+          {
+            "path": "hardware/gpio.c"
           }
         ],
         "folders": []
@@ -207,8 +213,7 @@
         "libList": [],
         "defineList": [
           "USE_USB_OTG_FS",
-          "STM32F401xC",
-          "DEBUG"
+          "STM32F401xC"
         ]
       }
     },
@@ -301,8 +306,7 @@
         "libList": [],
         "defineList": [
           "USE_USB_OTG_FS",
-          "STM32F412Rx",
-          "DEBUG"
+          "STM32F412Rx"
         ]
       }
     }

@@ -6,13 +6,13 @@
 
 
 #define USBD_VID                        0x3210
-#define USBD_PID                        0x1230
+#define USBD_PID                        0x2233
 
 
 
 #define USBD_LANGID_STRING              0x0409
 #define USBD_MANUFACTURER_STRING        "XJD"
-#define USBD_PRODUCT_FS_STRING          "XJD GamePad"
+#define USBD_PRODUCT_FS_STRING          "XJD AUDIO"
 
 #define USBD_SERIALNUMBER_FS_STRING     "000000000123"
 

@@ -10,13 +10,13 @@ unsigned char ES9018_ByteRead(unsigned char DataAddr)
 	IIC_Start();
 	IIC_Send(ES9018_ADDR+((DataAddr/256)<<1));   //发送器件地址ES9018_ADDR,写数据
 	IIC_Wait_Ack();
-    IIC_Send(DataAddr%256);			//发送低地址
+	IIC_Send(DataAddr%256);			//发送低地址
 	IIC_Wait_Ack();
 	IIC_Start();
 	IIC_Send(ES9018_ADDR|0x01);		//进入接收模式
 	IIC_Wait_Ack();
-    temp=IIC_Read(0);
-    IIC_Stop();						//产生一个停止条件
+	temp=IIC_Read(0);
+	IIC_Stop();						//产生一个停止条件
 	return temp;
 }
 void ES9018_ByteWrite(unsigned char DataAddr,unsigned char Data)
@@ -24,18 +24,27 @@ void ES9018_ByteWrite(unsigned char DataAddr,unsigned char Data)
 	IIC_Start();
 	IIC_Send(ES9018_ADDR+((DataAddr/256)<<1));   //发送器件地址ES9018_ADDR,写数据
 	IIC_Wait_Ack();
-    IIC_Send(DataAddr%256);   //发送低地址
+	IIC_Send(DataAddr%256);   //发送低地址
 	IIC_Wait_Ack();
 	IIC_Send(Data);     //发送字节
 	IIC_Wait_Ack();
-    IIC_Stop();//产生一个停止条件
+	IIC_Stop();//产生一个停止条件
 	delay_ms(10);
 }
 
 unsigned char ES9018_Init(void)
 {
 	RCC->AHB1ENR|=1<<0|1<<1|1<<2;
+#if defined(RCC_MCO_1)
 
+	GPIOA->AFR[1] &=0xFFFFFFF0;			//复用PA8
+	GPIOA->MODER&=0xFFFCFFFF;			//PA8
+	GPIOA->MODER|=0x00020000;
+	GPIOA->OTYPER&=0x0000FEFF;
+	GPIOA->OSPEEDR&=0xFFFCFFFF;
+	GPIOA->OSPEEDR|=0x00030000;
+	GPIOA->PUPDR&=0xFFFCFFFF;
+#elif defined(RCC_MCO_1)
 	GPIOC->AFR[1] &=0xFFFFFF0F;			//复用PC9
 	GPIOC->MODER&=0xFFF3FFFF;			//PC9
 	GPIOC->MODER|=0x00080000;
@@ -43,6 +52,8 @@ unsigned char ES9018_Init(void)
 	GPIOC->OSPEEDR&=0xFFF3FFFF;  
 	GPIOC->OSPEEDR|=0x000C0000;
 	GPIOC->PUPDR&=0xFFF3FFFF;
+#endif
+
 #if defined(I2S2)
 	GPIOB->AFR[1] &=0x0F00FFFF;			//复用PB12 PB13 PB15
 	GPIOB->AFR[1] |=0x50550000;
@@ -113,7 +124,7 @@ void ES9018_SetVol(unsigned char index)
 void ES9018_SetMute(unsigned char mute)
 {
 	if(mute)
-	ES9018_ByteWrite(0x07,0x80);
-	else
 	ES9018_ByteWrite(0x07,0x83);
+	else
+	ES9018_ByteWrite(0x07,0x80);
 }

@@ -12,18 +12,9 @@ static uint8_t  usbd_audio_SOF        (void *pdev);
 static uint8_t  usbd_audio_OUT_Incplt (void  *pdev);
 
 //音频请求管理功能
-static uint8_t  usbd_audio_hid_Setup      (void  *pdev, USB_SETUP_REQ *req);
-static uint8_t  usbd_hid_Setup      (void  *pdev, USB_SETUP_REQ *req);
 static void AUDIO_Req_GetCurrent		(void *pdev, USB_SETUP_REQ *req);
 static void AUDIO_Req_SetCurrent		(void *pdev, USB_SETUP_REQ *req);
 static uint8_t  *usbd_audio_GetCfgDesc (uint8_t speed, uint16_t *length);
-
-
-
-
-static uint32_t  USBD_HID_Protocol = 0;
-static uint32_t  USBD_HID_IdleState= 0;
-static uint32_t  USBD_HID_AltSet= 0;
 
 //用于音频数据输出传输的主缓冲区及其相关指针
 uint8_t  IsocOutBuff [TOTAL_OUT_BUF_SIZE * 2];
@@ -50,7 +41,7 @@ USBD_Class_cb_TypeDef  AUDIO_cb =
 {
 	usbd_audio_Init,
 	usbd_audio_DeInit,
-	usbd_audio_hid_Setup,
+	usbd_audio_Setup,
 	NULL,
 	usbd_audio_EP0_RxReady,
 	usbd_audio_DataIn,
@@ -67,7 +58,7 @@ static uint8_t usbd_audio_CfgDesc[AUDIO_CONFIG_DESC_SIZE] =
 	0x09,									// bLength
 	USB_CONFIGURATION_DESCRIPTOR_TYPE,		// bDescriptorType 
 	DESC_SIZE(AUDIO_CONFIG_DESC_SIZE),		// 总大小   
-	0x03,                                	// bNumInterfaces 
+	0x02,                                	// bNumInterfaces 
 	0x01,                                	// bConfigurationValue 
 	0x00,                                 	// iConfiguration 
 	0xC0,                                 	// bmAttributes  BUS Powred
@@ -206,96 +197,13 @@ static uint8_t usbd_audio_CfgDesc[AUDIO_CONFIG_DESC_SIZE] =
 	0x00,
 	// 07 byte
 
-	//						操纵杆界面描述符
-	0x09,							//bLength: Interface Descriptor size
-	USB_INTERFACE_DESCRIPTOR_TYPE,	//bDescriptorType: Interface descriptor type
-	0x02,							//bInterfaceNumber: Number of Interface
-	0x00,							//bAlternateSetting: Alternate setting
-	0x01,							//bNumEndpoints
-	0x03,							//bInterfaceClass: HID
-	0x01,							//bInterfaceSubClass : 1=BOOT, 0=no boot
-	0x02,							//nInterfaceProtocol : 0=none, 1=keyboard, 2=mouse
-	0,								//iInterface: Index of string descriptor
-	//						操纵杆HID描述符
-	0x09,							//bLength: HID Descriptor size
-	HID_DESCRIPTOR_TYPE,			//bDescriptorType: HID
-	0x11,							//bcdHID: HID Class Spec release number
-	0x01,
-	0x00,							//bCountryCode: Hardware target country
-	0x01,							//bNumDescriptors: Number of HID class descriptors to follow
-	0x22,							//bDescriptorType
-	JOYSTICK_REPORT_DESC_SIZE,		//wItemLength: Total length of Report descriptor`
-	0x00,
-	//						操纵杆端点描述符
-	0x07,							//端点描述符大小
-	USB_ENDPOINT_DESCRIPTOR_TYPE,	//bDescriptorType:
-	HID_IN_EP,						//端点地址
-	0x03,          					//端点号
-	HID_OUT_PACKET, 				//端点字节大小
-	0x00,
-	0x0A,							//bInterval: Polling Interval (10 ms)
 } ;
-
-static uint8_t USBD_HID_Desc[USB_HID_DESC_SIZ] =
-{
-	/* 18 */
-	0x09,					//bLength: HID Descriptor size
-	HID_DESCRIPTOR_TYPE,	//bDescriptorType: HID
-	0x11,					//bcdHID: HID Class Spec release number
-	0x01,
-	0x00,					//bCountryCode: Hardware target country
-	0x01,					//bNumDescriptors: Number of HID class descriptors to follow
-	0x22,					//bDescriptorType
-	JOYSTICK_REPORT_DESC_SIZE,//wItemLength: Total length of Report descriptor
-	0x00,
-};
-
-static uint8_t joystick_reportdesc[JOYSTICK_REPORT_DESC_SIZE]=
-{
-	0x05, 0x01,                    // USAGE_PAGE (Generic Desktop)
-	0x09, 0x05,                    // USAGE (Game Pad)
-	0xa1, 0x01,                    // COLLECTION (Application)
-
-	0x09, 0x01,                    //   USAGE (Pointer)
-	0xa1, 0x00,                    //   COLLECTION (Physical)
-	0x09, 0x30,                    //     USAGE (X)
-	0x09, 0x31,                    //     USAGE (Y)
-	0x09, 0x32,
-	0x09, 0x33,
-	0x15, 0x00,                    //     LOGICAL_MINIMUM (0)
-	0x26, 0xff, 0x00,              //     LOGICAL_MAXIMUM (255)	
-	0x35, 0x00,                    //     PHYSICAL_MINIMUM (0)
-	0x46, 0xff, 0x7f,              //     PHYSICAL_MAXIMUM (32767)
-	0x75, 0x08,                    //     REPORT_SIZE (8)
-	0x95, 0x02,                    //     REPORT_COUNT (2)
-	0x81, 0x02,                    //     INPUT (Data,Var,Abs)
-	0xc0,                          //     END_COLLECTION
-
-	0x09, 0x39,                    //   USAGE (Hat switch)
-	0x15, 0x01,                    //   LOGICAL_MINIMUM (1)
-	0x25, 0x08,                    //   LOGICAL_MAXIMUM (8)
-	0x75, 0x04,                    //   REPORT_SIZE (4)
-	0x95, 0x01,                    //   REPORT_COUNT (1)
-	0x81, 0x42,                    //   INPUT (Data,Var,Abs,Null)
-
-	0x05, 0x09,                    //   USAGE_PAGE (Button)
-	0x19, 0x01,                    //   USAGE_MINIMUM (Button 1)
-	0x29, 0x14,                    //   USAGE_MAXIMUM (Button 12)
-	0x15, 0x00,                    //   LOGICAL_MINIMUM (0)
-	0x25, 0x01,                    //   LOGICAL_MAXIMUM (1)
-	0x75, 0x01,                    //   REPORT_SIZE (1)
-	0x95, 0x14,                    //   REPORT_COUNT (12)
-	0x81, 0x02,                    //   INPUT (Data,Var,Abs)
-	0xc0                           // END_COLLECTION
-};
 
 //初始化AUDIO接口
 static uint8_t  usbd_audio_Init (void  *pdev, uint8_t cfgidx)
 {  
 	//打开音频端点输出  
 	DCD_EP_Open(pdev,AUDIO_OUT_EP,AUDIO_OUT_PACKET,USB_OTG_EP_ISOC);
-	//打开键盘端点输出
-	DCD_EP_Open(pdev,HID_IN_EP,HID_OUT_PACKET,USB_OTG_EP_INT);
 	//初始化音频输出硬件层
 	if (AUDIO_OUT_fops.Init(USBD_AUDIO_FREQ, DEFAULT_VOLUME, 0) != USBD_OK)
 	{
@@ -311,96 +219,12 @@ static uint8_t  usbd_audio_Init (void  *pdev, uint8_t cfgidx)
 static uint8_t  usbd_audio_DeInit (void  *pdev,uint8_t cfgidx)
 { 
 	DCD_EP_Close (pdev ,AUDIO_OUT_EP);
-	DCD_EP_Close (pdev ,HID_IN_EP);
 	//取消初始化音频输出硬件层
 	if (AUDIO_OUT_fops.DeInit(0) != USBD_OK)
 	{
 	return USBD_FAIL;
 	}
 	return USBD_OK;
-}
-
-//处理音频和键盘控制请求解析
-static uint8_t  usbd_audio_hid_Setup (void  *pdev,USB_SETUP_REQ *req)
-{
-	switch (req->bmRequest & 0x03)
-	{
-		case 0x01:
-			if(req->wIndex!=2)
-				return usbd_audio_Setup(pdev,req);
-			return usbd_hid_Setup(pdev,req);
-		case 0x02:
-		{
-			if(req->wIndex!=0x81)
-				return usbd_audio_Setup(pdev,req);
-			return usbd_hid_Setup(pdev,req);
-		}
-					
-	}
-	return USBD_OK;
-}
-
-//处理键盘控制请求解析
-static uint8_t  usbd_hid_Setup (void  *pdev,USB_SETUP_REQ *req)
-{
-  uint16_t len = USB_HID_DESC_SIZ;
-  uint8_t  *pbuf = usbd_audio_CfgDesc + 18;
-  
-	switch (req->bmRequest & USB_REQ_TYPE_MASK)
-	{
-		case USB_REQ_TYPE_CLASS :  
-		switch (req->bRequest)
-		{
-			case HID_REQ_GET_IDLE:
-				USBD_CtlSendData (pdev,(uint8_t *)&USBD_HID_IdleState,1);        
-				break;
-			case HID_REQ_GET_PROTOCOL:
-				USBD_CtlSendData (pdev,(uint8_t *)&USBD_HID_Protocol,1);    
-				break;
-			case HID_REQ_SET_IDLE:
-				USBD_HID_IdleState = (uint8_t)(req->wValue >> 8);
-				break;
-			case HID_REQ_SET_PROTOCOL:
-				USBD_HID_Protocol = (uint8_t)(req->wValue);
-				break;
-			default:
-				USBD_CtlError (pdev, req);
-			return USBD_FAIL; 
-		}
-    	break;
-    
-	case USB_REQ_TYPE_STANDARD:
-	switch (req->bRequest)
-	{
-		case 1:
-			
-			break;
-		case USB_REQ_GET_DESCRIPTOR: 
-			if( req->wValue >> 8 == HID_REPORT_DESC)
-			{
-
-				len = MIN(JOYSTICK_REPORT_DESC_SIZE , req->wLength);
-				pbuf = joystick_reportdesc;
-				USBD_CtlSendData (pdev, pbuf,len);
-
-			}
-			else if( req->wValue >> 8 == HID_DESCRIPTOR_TYPE)
-			{
-				pbuf = USBD_HID_Desc;
-				len = MIN(USB_HID_DESC_SIZ , req->wLength);
-				USBD_CtlSendData (pdev, pbuf,len);
-			}
-			break;
-		case USB_REQ_GET_INTERFACE :
-			USBD_CtlSendData (pdev,(uint8_t *)&USBD_HID_AltSet,1);
-		break;
-
-		case USB_REQ_SET_INTERFACE :
-			USBD_HID_AltSet = (uint8_t)(req->wValue);
-		break;
-	}
-  }
-  return USBD_OK;
 }
 
 //处理音频控制请求解析
@@ -485,7 +309,6 @@ static uint8_t  usbd_audio_EP0_RxReady (void  *pdev)
 //处理音频输入数据
 static uint8_t  usbd_audio_DataIn (void *pdev, uint8_t epnum)
 {
-	DCD_EP_Flush(pdev,HID_IN_EP);
 	return USBD_OK;
 }
 
@@ -564,50 +387,7 @@ static uint8_t  usbd_audio_OUT_Incplt (void  *pdev)
 }
 
 static void AUDIO_Req_GetCurrent(void *pdev, USB_SETUP_REQ *req)
-{
- unsigned char *haudio=AudioCtl;
-	switch(req->wValue>>8)
-	{
-		case	1:
-		{
-			if(req->bRequest==0x81)
-			{
-				*haudio=0;
-			}
-			else if(req->bRequest==0x82)
-			{
-				*haudio=0;
-			}
-			else if(req->bRequest==0x83)
-			{
-				*haudio=1;
-			}
-			else
-			{
-				*haudio=1;
-			}
-		}
-		case	2:
-		{
-			if(req->bRequest==0x81)
-			{
-				*haudio=0x14;
-			}
-			else if(req->bRequest==0x82)
-			{
-				*haudio=0x00;
-			}
-			else if(req->bRequest==0x83)
-			{
-				*haudio=0x64;
-			}
-			else
-			{
-				*haudio=1;
-			}
-		}
-	}
-			
+{		
   USBD_CtlSendData (pdev,AudioCtl,req->wLength);
 }
 
@@ -628,13 +408,4 @@ static uint8_t  *usbd_audio_GetCfgDesc(uint8_t speed, uint16_t *length)
 {
 	*length = sizeof (usbd_audio_CfgDesc);
 	return usbd_audio_CfgDesc;
-}
-
-unsigned char usbd_sendreport(USB_OTG_CORE_HANDLE  *pdev, unsigned char *report,unsigned short len)
-{
-	if (pdev->dev.device_status == USB_OTG_CONFIGURED )
-	{
-		DCD_EP_Tx (pdev, HID_IN_EP, report, len);
-	}
-	return USBD_OK;
 }

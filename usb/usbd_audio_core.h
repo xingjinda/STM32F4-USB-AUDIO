@@ -15,7 +15,7 @@
 // 音频传输缓冲区的总大小 
 #define TOTAL_OUT_BUF_SIZE                           ((uint32_t)(AUDIO_OUT_PACKET * OUT_PACKET_NUM))
 
-#define AUDIO_CONFIG_DESC_SIZE                          134
+#define AUDIO_CONFIG_DESC_SIZE                          109
 #define AUDIO_INTERFACE_DESC_SIZE                       9
 #define USB_AUDIO_DESC_SIZ                              0x09
 #define AUDIO_STANDARD_ENDPOINT_DESC_SIZE               0x09
@@ -61,16 +61,6 @@
 
 #define AUDIO_OUT_STREAMING_CTRL                        0x02
 
-#define HID_REQ_SET_PROTOCOL                            0x0B
-#define HID_REQ_GET_PROTOCOL                            0x03
-
-#define HID_REQ_SET_IDLE                                0x0A
-#define HID_REQ_GET_IDLE                                0x02
-
-#define USB_HID_DESC_SIZ                                9
-#define HID_DESCRIPTOR_TYPE                             0x21
-#define HID_REPORT_DESC                                 0x22
-#define JOYSTICK_REPORT_DESC_SIZE                       64
 
 typedef struct _Audio_Fops
 {
@@ -92,8 +82,6 @@ typedef struct _Audio_Fops
 
 #define SAMPLE_FREQ(frq)               (uint8_t)(frq), (uint8_t)((frq >> 8)), (uint8_t)((frq >> 16))
 
-
-unsigned char usbd_sendreport(USB_OTG_CORE_HANDLE  *pdev, unsigned char *report,unsigned short len);
 
 extern USBD_Class_cb_TypeDef  AUDIO_cb;
 
