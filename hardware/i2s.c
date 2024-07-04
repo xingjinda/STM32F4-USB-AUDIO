@@ -25,6 +25,8 @@ const uint16_t I2S_PSC_TBL[][5]=
 	{19200,393,2,2,0},		//192Khz采样率
 };
 
+extern void audio_i2s_dma_callback(void);
+
 #if defined(I2S2)
 //I2S2初始化
 //std:I2S标准,00,飞利浦标准;01,MSB对齐标准(右对齐);10,LSB对齐标准(左对齐);11,PCM标准
@@ -112,8 +114,6 @@ void I2S_TX_DMA_Init(uint8_t* buf0,uint8_t *buf1,uint16_t num)
 	DMA1_Stream4->CR|=1<<4;		//开启传输完成中断
 	nvic_init(0,0,DMA1_Stream4_IRQn,2);	//抢占1，子优先级0，组2  
 } 
-
-extern void audio_i2s_dma_callback(void);
 
 //DMA1_Stream4中断服务函数
 void DMA1_Stream4_IRQHandler(void)
