@@ -1,22 +1,5 @@
 #include "iic.h"
-#include "stm32f4xx.h"  
 #include "delay.h"
-
-void IIC_SCL(unsigned char data)
-{
-	if(data)
-	SCL_GPIO->BSRR|=1<<SCL_PIN;
-	else
-	SCL_GPIO->BSRR|=(1<<SCL_PIN)<<16;
-}
-
-void IIC_SDA(unsigned char data)
-{
-	if(data)
-	SDA_GPIO->BSRR|=1<<SDA_PIN;
-	else
-	SDA_GPIO->BSRR|=(1<<SDA_PIN)<<16;
-}
 
 void IIC_Init(void)
 {			

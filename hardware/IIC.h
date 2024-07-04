@@ -1,5 +1,6 @@
 #ifndef __IIC_H
 #define __IIC_H
+#include "stm32f4xx.h" 
 
 #define IIC_CLOCK()     RCC->AHB1ENR|=1<<2;//开启GPIOC时钟
 
@@ -14,9 +15,9 @@
 #define SDA_OUT() {SDA_GPIO->MODER&=~(3<<(SDA_PIN*2));SDA_GPIO->MODER|=1<<(SDA_PIN*2);}
 
 	 
-#define READ_SDA   SDA_GPIO->IDR&1<<SDA_PIN 
-
-
+#define READ_SDA		SDA_GPIO->IDR&1<<SDA_PIN
+#define IIC_SCL(x)		if(x)SCL_GPIO->ODR|=(1<<SCL_PIN); else SCL_GPIO->ODR&=~(1<<SCL_PIN);
+#define IIC_SDA(x)		if(x)SDA_GPIO->ODR|=(1<<SDA_PIN); else SDA_GPIO->ODR&=~(1<<SDA_PIN);
 
 void IIC_Init(void);		 
 void IIC_Start(void);	
