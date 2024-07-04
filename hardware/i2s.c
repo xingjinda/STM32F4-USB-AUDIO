@@ -1,5 +1,30 @@
 #include "i2s.h"
 
+//采样率计算公式:Fs=I2SxCLK/[256*(2*I2SDIV+ODD)]
+//I2SxCLK=(HSE/pllm)*PLLI2SN/PLLI2SR
+//一般HSE=8Mhz 
+//pllm:在Sys_Clock_Set设置的时候确定，一般是8
+//PLLI2SN:一般是192~432 
+//PLLI2SR:2~7
+//I2SDIV:2~255
+//ODD:0/1
+//I2S分频系数表@pllm=8,HSE=8Mhz,即vco输入频率为1Mhz
+//表格式:采样率/10,PLLI2SN,PLLI2SR,I2SDIV,ODD
+const uint16_t I2S_PSC_TBL[][5]=
+{
+	{800 ,256,5,12,1},		//8Khz采样率
+	{1102,429,4,19,0},		//11.025Khz采样率 
+	{1600,213,2,13,0},		//16Khz采样率
+	{2205,429,4, 9,1},		//22.05Khz采样率
+	{3200,213,2, 6,1},		//32Khz采样率
+	{4410,271,2, 6,0},		//44.1Khz采样率
+	{4800,258,3, 3,1},		//48Khz采样率
+	{8820,316,2, 3,1},		//88.2Khz采样率
+	{9600,344,2, 3,1},  	//96Khz采样率
+	{17640,361,2,2,0},  	//176.4Khz采样率 
+	{19200,393,2,2,0},  	//192Khz采样率
+};
+
 #if defined(I2S2)
 //I2S2初始化
 //std:I2S标准,00,飞利浦标准;01,MSB对齐标准(右对齐);10,LSB对齐标准(左对齐);11,PCM标准
@@ -25,31 +50,7 @@ void I2S_Init(uint8_t std,uint8_t mode,uint8_t cpol,uint8_t datalen)
 	SPI2->CR2|=1<<1;			//SPI2 TX DMA请求使能.
 	SPI2->I2SCFGR|=1<<10;		//SPI2 I2S EN使能.	
 } 
-
-//采样率计算公式:Fs=I2SxCLK/[256*(2*I2SDIV+ODD)]
-//I2SxCLK=(HSE/pllm)*PLLI2SN/PLLI2SR
-//一般HSE=8Mhz 
-//pllm:在Sys_Clock_Set设置的时候确定，一般是8
-//PLLI2SN:一般是192~432 
-//PLLI2SR:2~7
-//I2SDIV:2~255
-//ODD:0/1
-//I2S分频系数表@pllm=8,HSE=8Mhz,即vco输入频率为1Mhz
-//表格式:采样率/10,PLLI2SN,PLLI2SR,I2SDIV,ODD
-const uint16_t I2S_PSC_TBL[][5]=
-{
-	{800 ,256,5,12,1},		//8Khz采样率
-	{1102,429,4,19,0},		//11.025Khz采样率 
-	{1600,213,2,13,0},		//16Khz采样率
-	{2205,429,4, 9,1},		//22.05Khz采样率
-	{3200,213,2, 6,1},		//32Khz采样率
-	{4410,271,2, 6,0},		//44.1Khz采样率
-	{4800,258,3, 3,1},		//48Khz采样率
-	{8820,316,2, 3,1},		//88.2Khz采样率
-	{9600,344,2, 3,1},  	//96Khz采样率
-	{17640,361,2,2,0},  	//176.4Khz采样率 
-	{19200,393,2,2,0},  	//192Khz采样率
-};  
+  
 //设置IIS的采样率(@MCKEN)
 //samplerate:采样率,单位:Hz
 //返回值:0,设置成功;1,无法设置.
@@ -150,31 +151,6 @@ void I2S_Init(unsigned char std,unsigned char mode,unsigned char cpol,unsigned c
 	SPI3->I2SCFGR|=1<<10;		//SPI3 I2S EN使能.	
 }
 
-//采样率计算公式:Fs=I2SxCLK/[256*(2*I2SDIV+ODD)]
-//I2SxCLK=(HSE/pllm)*PLLI2SN/PLLI2SR
-//一般HSE=8Mhz 
-//pllm:在Sys_Clock_Set设置的时候确定，一般是8
-//PLLI2SN:一般是192~432 
-//PLLI2SR:2~7
-//I2SDIV:2~255
-//ODD:0/1
-//I2S分频系数表@pllm=8,HSE=8Mhz,即vco输入频率为1Mhz
-//表格式:采样率/10,PLLI2SN,PLLI2SR,I2SDIV,ODD
-const uint16_t I2S_PSC_TBL[][5]=
-{
-	{800 ,256,5,12,1},		//8Khz采样率
-	{1102,429,4,19,0},		//11.025Khz采样率 
-	{1600,213,2,13,0},		//16Khz采样率
-	{2205,429,4, 9,1},		//22.05Khz采样率
-	{3200,213,2, 6,1},		//32Khz采样率
-	{4410,271,2, 6,0},		//44.1Khz采样率
-	{4800,258,3, 3,1},		//48Khz采样率
-	{8820,316,2, 3,1},		//88.2Khz采样率
-	{9600,344,2, 3,1},  	//96Khz采样率
-	{17640,361,2,2,0},  	//176.4Khz采样率 
-	{19200,393,2,2,0},  	//192Khz采样率
-}; 
-
 //设置IIS的采样率(@MCKEN)
 //samplerate:采样率,单位:Hz
 //返回值:0,设置成功;1,无法设置.
@@ -201,6 +177,7 @@ unsigned char I2S_SampleRate_Set(unsigned int samplerate)
 	SPI3->I2SPR=tempreg;			//设置I2SPR寄存器 
 	return 0;
 }  
+
 //I2S3 TX DMA配置
 //设置为双缓冲模式,并开启DMA传输完成中断
 //buf0:M0AR地址.
@@ -237,7 +214,6 @@ void I2S_TX_DMA_Init(unsigned char* buf0,unsigned char *buf1,unsigned short num)
 	nvic_init(0,0,DMA1_Stream5_IRQn,2);	//抢占1，子优先级0，组2  
 } 
 
-
 //DMA1_Stream5中断服务函数
 void DMA1_Stream5_IRQHandler(void)
 {      
@@ -248,5 +224,3 @@ void DMA1_Stream5_IRQHandler(void)
 	}   											 
 } 
 #endif
-
-
