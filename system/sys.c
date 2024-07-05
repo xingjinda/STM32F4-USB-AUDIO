@@ -70,7 +70,7 @@ void soft_reset(void)
 
 void stm32_clock_init(uint32_t plln, uint32_t pllm, uint32_t pllp, uint32_t pllq)
 {
-
+	SCB->CPACR |= ((3<<10*2)|(3<<11*2));//开启浮点运算
 	RCC->CR = 0x00000001;		//复位CR      
 	RCC->CFGR = 0x00000000;		//复位CFGR
 	RCC->PLLCFGR = 0x24003010;  //复位PLLCFGR
