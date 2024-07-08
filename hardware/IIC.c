@@ -1,27 +1,30 @@
 #include "iic.h"
 #include "delay.h"
 
+void IIC_SCL(uint8_t x){if(x)SCL_GPIO->ODR|=(1<<SCL_PIN); else SCL_GPIO->ODR&=~(1<<SCL_PIN);}
+void IIC_SDA(uint8_t x){if(x)SDA_GPIO->ODR|=(1<<SDA_PIN); else SDA_GPIO->ODR&=~(1<<SDA_PIN);}
+
 void IIC_Init(void)
 {			
 	IIC_CLOCK();
 
-	SCL_GPIO->MODER&=~((unsigned int)3<<(2*SCL_PIN));
-	SCL_GPIO->MODER|=(unsigned int)1<<(2*SCL_PIN);
+	SCL_GPIO->MODER&=~((uint32_t)3<<(2*SCL_PIN));
+	SCL_GPIO->MODER|=(uint32_t)1<<(2*SCL_PIN);
 	SCL_GPIO->OTYPER&=~(1<<SCL_PIN);
 	SCL_GPIO->OTYPER|=0<<SCL_PIN;
-	SCL_GPIO->OSPEEDR&=~((unsigned int)3<<(2*SCL_PIN));
-	SCL_GPIO->OSPEEDR|=(unsigned int)2<<(2*SCL_PIN);
-	SCL_GPIO->PUPDR&=~((unsigned int)3<<(2*SCL_PIN));
-	SCL_GPIO->PUPDR|=(unsigned int)2<<(2*SCL_PIN);
+	SCL_GPIO->OSPEEDR&=~((uint32_t)3<<(2*SCL_PIN));
+	SCL_GPIO->OSPEEDR|=(uint32_t)2<<(2*SCL_PIN);
+	SCL_GPIO->PUPDR&=~((uint32_t)3<<(2*SCL_PIN));
+	SCL_GPIO->PUPDR|=(uint32_t)2<<(2*SCL_PIN);
 
-	SDA_GPIO->MODER&=~((unsigned int)3<<(2*SDA_PIN));
-	SDA_GPIO->MODER|=(unsigned int)1<<(2*SDA_PIN);
+	SDA_GPIO->MODER&=~((uint32_t)3<<(2*SDA_PIN));
+	SDA_GPIO->MODER|=(uint32_t)1<<(2*SDA_PIN);
 	SDA_GPIO->OTYPER&=~(1<<SDA_PIN);
 	SDA_GPIO->OTYPER|=0<<SDA_PIN;
-	SDA_GPIO->OSPEEDR&=~((unsigned int)3<<(2*SDA_PIN));
-	SDA_GPIO->OSPEEDR|=(unsigned int)2<<(2*SDA_PIN);
-	SDA_GPIO->PUPDR&=~((unsigned int)3<<(2*SDA_PIN));
-	SDA_GPIO->PUPDR|=(unsigned int)2<<(2*SDA_PIN);
+	SDA_GPIO->OSPEEDR&=~((uint32_t)3<<(2*SDA_PIN));
+	SDA_GPIO->OSPEEDR|=(uint32_t)2<<(2*SDA_PIN);
+	SDA_GPIO->PUPDR&=~((uint32_t)3<<(2*SDA_PIN));
+	SDA_GPIO->PUPDR|=(uint32_t)2<<(2*SDA_PIN);
 
 	IIC_SCL(1);
 	IIC_SDA(1);
@@ -49,9 +52,9 @@ void IIC_Stop(void)
 	delay_us(4);							   	
 }
 
-unsigned char IIC_Wait_Ack(void)
+uint8_t IIC_Wait_Ack(void)
 {
-	unsigned char time=0;
+	uint8_t time=0;
 	SDA_IN();   
 	IIC_SDA(1);
 	delay_us(1);	   
@@ -91,9 +94,9 @@ void IIC_NAck(void)
 	IIC_SCL(0);
 }					 				     
 
-void IIC_Send(unsigned char txd)
+void IIC_Send(uint8_t txd)
 {                        
-    unsigned char t;   
+    uint8_t t;   
 	SDA_OUT(); 	    
     IIC_SCL(0);
     for(t=0;t<8;t++)
@@ -108,9 +111,9 @@ void IIC_Send(unsigned char txd)
     }	 
 } 	    
  
-unsigned char IIC_Read(unsigned char ack)
+uint8_t IIC_Read(uint8_t ack)
 {
-	unsigned char i,receive=0;
+	uint8_t i,receive=0;
 	SDA_IN();
     for(i=0;i<8;i++ )
 	{
